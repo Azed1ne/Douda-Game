@@ -1,9 +1,12 @@
+import sys
+
 import pygame
 
 vec2 = pygame.math.Vector2
 
 class Snake:
     def __init__(self, game):
+        self.font = pygame.font.SysFont(None, 32)
         self.game = game
         self.size = game.TILE_SIZE
         self.bbloc = pygame.rect.Rect([0, 0, game.TILE_SIZE, game.TILE_SIZE])
@@ -46,11 +49,55 @@ class Snake:
 
     def check_self_eating(self):
         if len(self.segment) != len(set(seg.center for seg in self.segment)):
-            self.game.new_game()
+            text = "Final score: " + str(self.game.score)
+            text2 = "Press any Key to continue or q to exit."
+            text_surface = self.font.render(text, True, (255, 255, 255))
+            text_surface2 = self.font.render(text2, True, (255, 255, 255))
+            text_rect = text_surface.get_rect()
+            text_rect.centerx = 300  # droit gauche
+            text_rect.centery = 200
+            self.game.WINDOW.blit(text_surface, text_rect)
+            pygame.display.flip()
+            text_rect.centerx = 190
+            text_rect.centery = 270
+            self.game.WINDOW.blit(text_surface2, text_rect)
+            pygame.display.flip()
+            pygame.time.delay(2000)  # pause for 2s
+
+            self.game.score = 0
+            self.continue_quit()
+            self.game.new_game() # end the game if it collides with its body
 
     def check_border(self):
         if self.bbloc.left < 0 or self.bbloc.right > self.game.WIDTH or self.bbloc.top < 0 or self.bbloc.bottom > self.game.HEIGHT:
-            self.game.new_game()
+            text = "Final score: " + str(self.game.score)
+            text2 = "Press any Key to continue or q to exit."
+            text_surface = self.font.render(text, True, (255, 255, 255))
+            text_surface2 = self.font.render(text2, True, (255, 255, 255))
+            text_rect = text_surface.get_rect()
+            text_rect.centerx = 300 # droit gauche
+            text_rect.centery = 200
+            self.game.WINDOW.blit(text_surface, text_rect)
+            pygame.display.flip()
+            text_rect.centerx = 190
+            text_rect.centery = 270
+            self.game.WINDOW.blit(text_surface2, text_rect)
+            pygame.display.flip()
+            pygame.time.delay(2000) # pause for 2s
+
+            self.game.score = 0
+            self.continue_quit()
+            self.game.new_game() # end the game if it collides with the border
+
+    def continue_quit(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.type == pygame.QUIT or event.key == pygame.K_q:
+                        pygame.quit()
+                        sys.exit()
+                    else:
+                        return
 
     def move(self):
         if self.delta_time():
